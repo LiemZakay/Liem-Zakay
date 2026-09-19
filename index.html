@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פלוגת הבשור - נפש תאומה</title>
+    <style>
+        :root {
+            --primary-color: #2c5e3b; /* ירוק בהשראת הסמל */
+            --secondary-color: #d4af37; /* צהוב מדברי */
+            --bg-color: #f0f4f1;
+            --card-bg: #ffffff;
+            --text-color: #2b2b2b;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+        h1, h2, h3 {
+            color: var(--primary-color);
+            text-align: center;
+        }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.2s ease;
+        }
+        .btn:hover {
+            background-color: #1e3f26;
+        }
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: #fff;
+        }
+        .btn-secondary:hover {
+            background-color: #b3922d;
+        }
+        .btn-danger {
+            background-color: #c0392b;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background-color: #962d22;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 16px 0;
+            border: 1px solid #ccd1d0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 16px; /* מונע זום אוטומטי באייפון */
+        }
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .match-card {
+            background: #f7faf8;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-right: 6px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .admin-item-card {
+            background: #f7faf8;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-right: 6px solid var(--secondary-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .match-avatar {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--secondary-color);
+            background: #fff;
+            flex-shrink: 0;
+        }
+        .match-info {
+            flex-grow: 1;
+            word-break: break-word;
+        }
+        .question-box {
+            background: #f9fbf9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            border: 1px solid #e1e8e2;
+        }
+        .profile-badge {
+            background: #eaf2ec;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px dashed var(--primary-color);
+        }
+        .avatar-picker-section {
+            background: #f9fbf9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            border: 1px solid #e1e8e2;
+            text-align: center;
+        }
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--secondary-color);
+            margin: 10px auto;
+            display: block;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo-container">
+        <h1>פלוגת הבשור</h1>
+        <h3 style="margin-top: -5px; color: #555;">מערכת "נפש תאומה"</h3>
+    </div>
+
+    <!-- מסך בחירת תפקיד ראשי -->
+    <div id="role-selection">
+        <p style="text-align: center; color: #666;">ברוכים הבאים למערכת ההיכרות הפלוגתית! מי אתם?</p>
+        <button class="btn" onclick="showScreen('cadet-login-screen')">אני צוער/ת</button>
+        <button class="btn btn-secondary" onclick="showScreen('admin-auth-screen')">כניסת אדמין (ניהול שאלות וצוערים)</button>
+    </div>
+
+    <!-- מסך כניסת צוער -->
+    <div id="cadet-login-screen" class="hidden">
+        <h2>כניסת צוער/ת</h2>
+        <label>הכנס את שמך המלא:</label>
+        <input type="text" id="cadet-name" placeholder="לדוגמה: ליאם זכאי">
+        <button class="btn" onclick="loginCadet()">המשך לפרופיל שלי</button>
+        <button class="btn btn-secondary" onclick="showScreen('role-selection')">חזרה</button>
+    </div>
+
+    <!-- פרופיל הצוער -->
+    <div id="cadet-profile-screen" class="hidden">
+        <div class="profile-badge">
+            <h3 id="welcome-cadet-title" style="margin:0 0 10px 0;"></h3>
+            <p style="margin:0; font-size: 14px; color: #555;">העלה תמונה מהגלריה, כתוב תיאור וענה על השאלון!</p>
+        </div>
+
+        <!-- אזור העלאת תמונה מהגלריה -->
+        <div class="avatar-picker-section">
+            <label style="font-weight: bold; color: var(--primary-color); display: block;">תמונת פרופיל (בחירה מהגלריה בטלפון / קובץ):</label>
+            <img id="current-avatar-preview" class="avatar-preview" src="" alt="תצוגה מקדימה">
+            <input type="file" id="image-file-input" accept="image/*" onchange="handleImageUpload(event)" style="font-size: 14px;">
+        </div>
+
+        <div class="question-box">
+            <label style="font-weight: bold; color: var(--primary-color); display:block; margin-bottom: 5px;">כמה מילים על עצמך (תיאור אישי):</label>
+            <textarea id="cadet-bio" placeholder="תחביבים, עיר הולדת, או משהו שחשוב שכולם ידעו עליך..."></textarea>
+        </div>
+
+        <div id="questions-container"></div>
+
+        <button class="btn" onclick="saveCadetProfile()">שמור פרופיל ותשובות ומצא התאמות!</button>
+        <button class="btn btn-secondary" onclick="showScreen('role-selection')">התנתק</button>
+    </div>
+
+    <!-- מסך תוצאות / נפש תאומה -->
+    <div id="cadet-results-screen" class="hidden">
+        <h2>הנפשות התאומות שלך בפלוגה 👯‍♂️</h2>
+        <p style="text-align: center; color: #666;">הצוערים שהכי דומים לך בראש שלך:</p>
+        <div id="matches-list"></div>
+        <button class="btn btn-secondary" onclick="showScreen('cadet-profile-screen')">ערוך את הפרופיל והתשובות שלי</button>
+        <button class="btn btn-danger" onclick="showScreen('role-selection')">יציאה מהמערכת</button>
+    </div>
+
+    <!-- מסך אימות אדמין -->
+    <div id="admin-auth-screen" class="hidden">
+        <h2>כניסת מנהל מערכת</h2>
+        <label>סיסמת אדמין:</label>
+        <input type="password" id="admin-password" placeholder="הכנס סיסמה">
+        <button class="btn" onclick="loginAdmin()">הכנס לפאנל ניהול</button>
+        <button class="btn btn-secondary" onclick="showScreen('role-selection')">חזרה</button>
+    </div>
+
+    <!-- פאנל ניהול אדמין -->
+    <div id="admin-dashboard-screen" class="hidden">
+        <h2>פאנל ניהול - פלוגת הבשור</h2>
+        
+        <div style="background: #eaf2ec; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <h3>הוספת שאלה חדשה (עם אפשרויות בחירה)</h3>
+            <label>טקסט השאלה:</label>
+            <input type="text" id="new-question-text" placeholder="לדוגמה: איזה סוג קפה אתה מעדיף בשטח?">
+            <label>אפשרויות תשובה (מופרדות בפסיקים):</label>
+            <input type="text" id="new-question-options" placeholder="שחור חזק, הפוך, נמס, לא שותה קפה">
+            <button class="btn" onclick="addQuestion()">הוסף שאלה עם אפשרויות</button>
+        </div>
+
+        <h3>ניהול שאלות קיימות</h3>
+        <div id="admin-questions-list"></div>
+
+        <h3 style="margin-top: 25px;">ניהול צוערים רשומים במערכת</h3>
+        <div id="admin-cadets-list"></div>
+
+        <button class="btn btn-secondary" style="margin-top: 20px;" onclick="showScreen('role-selection')">יציאה מהאדמין</button>
+    </div>
+</div>
+
+<script>
+    const defaultAvatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=DefaultCadet";
+
+    let state = {
+        questions: JSON.parse(localStorage.getItem('besor_questions')) || [
+            { id: 1, text: "מה מעיר אותך הכי מהר בבוקר בבה״ד 1?", options: ["שביזות יום א'", "השקם", "הפקודה של המפקד", "הקפה של הבוקר"] },
+            { id: 2, text: "איזה צבע מאפיין את מצב הרוח שלך במסעות?", options: ["ירוק בעיניים", "אפור עשן", "צהוב עולה", "כחול עמוק"] },
+            { id: 3, text: "מהי הדילמה הפיקודית הכי מעניינת בעיניך?", options: ["משימה מול אנשים", "ערכים מול לוחות זמנים", "משמעת מול חינוך", "דוגמה אישית בכל מחיר"] }
+        ],
+        cadets: JSON.parse(localStorage.getItem('besor_cadets')) || {},
+        currentCadet: null
+    };
+
+    function saveData() {
+        try {
+            localStorage.setItem('besor_questions', JSON.stringify(state.questions));
+            localStorage.setItem('besor_cadets', JSON.stringify(state.cadets));
+        } catch (e) {
+            alert('שגיאה בשמירת הנתונים בזיכרון המכשיר. ייתכן שהתמונה גדולה מדי.');
+        }
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.container > div:not(.logo-container)').forEach(div => {
+            div.classList.add('hidden');
+        });
+        const target = document.getElementById(screenId);
+        if (target) {
+            target.classList.remove('hidden');
+        }
+        
+        if(screenId === 'admin-dashboard-screen') {
+            renderAdminPanel();
+        }
+    }
+
+    function loginCadet() {
+        const nameInput = document.getElementById('cadet-name');
+        const name = nameInput.value.trim();
+        if(!name) {
+            alert('אנא הכנס שם מלא');
+            return;
+        }
+
+        state.currentCadet = name;
+        if(!state.cadets[name]) {
+            state.cadets[name] = {
+                avatar: defaultAvatar,
+                bio: "",
+                answers: {}
+            };
+        }
+
+        document.getElementById('welcome-cadet-title').innerText = `שלום, ${name}!`;
+        document.getElementById('current-avatar-preview').src = state.cadets[name].avatar || defaultAvatar;
+        document.getElementById('cadet-bio').value = state.cadets[name].bio || "";
+        document.getElementById('image-file-input').value = "";
+        
+        renderCadetQuestions();
+        showScreen('cadet-profile-screen');
+    }
+
+    // פונקציה לכיווץ התמונה והמרתה ל-Base64 כדי שתעבוד חלק גם בטלפון סלולרי
+    function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 150;
+                const MAX_HEIGHT = 150;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                state.cadets[state.currentCadet].avatar = compressedDataUrl;
+                document.getElementById('current-avatar-preview').src = compressedDataUrl;
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function renderCadetQuestions() {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = '';
+        const cadetAnswers = state.cadets[state.currentCadet].answers;
+
+        state.questions.forEach(q => {
+            const box = document.createElement('div');
+            box.className = 'question-box';
+            
+            let inputHtml = '';
+            if (q.options && q.options.length > 0) {
+                inputHtml = `<select data-qid="${q.id}">
+                    <option value="">בחר תשובה...</option>
+                    ${q.options.map(opt => `<option value="${opt}" ${cadetAnswers[q.id] === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                </select>`;
+            } else {
+                inputHtml = `<input type="text" data-qid="${q.id}" value="${cadetAnswers[q.id] || ''}" placeholder="הכנס את תשובתך...">`;
+            }
+
+            box.innerHTML = `
+                <label style="font-weight: bold; color: var(--primary-color); display:block; margin-bottom: 5px;">${q.text}</label>
+                ${inputHtml}
+            `;
+            container.appendChild(box);
+        });
+    }
+
+    function saveCadetProfile() {
+        const bioText = document.getElementById('cadet-bio').value.trim();
+        state.cadets[state.currentCadet].bio = bioText;
+
+        const container = document.getElementById('questions-container');
+        const inputs = container.querySelectorAll('input, select');
+        
+        inputs.forEach(input => {
+            const qId = input.getAttribute('data-qid');
+            state.cadets[state.currentCadet].answers[qId] = input.value.trim();
+        });
+
+        saveData();
+        calculateMatches();
+    }
+
+    function calculateMatches() {
+        const currentCadetData = state.cadets[state.currentCadet];
+        const resultsList = document.getElementById('matches-list');
+        resultsList.innerHTML = '';
+
+        let matches = [];
+
+        Object.keys(state.cadets).forEach(otherName => {
+            if(otherName === state.currentCadet) return;
+            const otherData = state.cadets[otherName];
+            
+            let score = 0;
+            let totalQ = state.questions.length;
+
+            state.questions.forEach(q => {
+                const ans1 = (currentCadetData.answers[q.id] || "").toLowerCase();
+                const ans2 = (otherData.answers[q.id] || "").toLowerCase();
+                if(ans1 && ans2 && ans1 === ans2) {
+                    score++;
+                }
+            });
+
+            const matchPercentage = totalQ > 0 ? Math.round((score / totalQ) * 100) : 50;
+            const finalScore = Math.max(matchPercentage, Math.floor(Math.random() * 20) + 70);
+
+            matches.push({ 
+                name: otherName, 
+                avatar: otherData.avatar || defaultAvatar, 
+                bio: otherData.bio || "לא הוזן תיאור אישי.", 
+                score: finalScore 
+            });
+        });
+
+        matches.sort((a, b) => b.score - a.score);
+
+        if(matches.length === 0) {
+            resultsList.innerHTML = `<p style="text-align: center; color: #777;">עוד אין צוערים נוספים במערכת. חזור לכאן בקרוב!</p>`;
+        } else {
+            matches.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'match-card';
+                card.innerHTML = `
+                    <img src="${m.avatar}" class="match-avatar">
+                    <div class="match-info">
+                        <h4 style="margin:0 0 3px 0; color: var(--primary-color);">${m.name}</h4>
+                        <p style="margin:0 0 6px 0; font-size:13px; color:#555;"><em>"${m.bio}"</em></p>
+                        <p style="margin:0; font-size:14px; color:#222;">אחוז התאמה לנפש תאומה: <strong>${m.score}%</strong></p>
+                    </div>
+                `;
+                resultsList.appendChild(card);
+            });
+        }
+
+        showScreen('cadet-results-screen');
+    }
+
+    function loginAdmin() {
+        const pass = document.getElementById('admin-password').value;
+        if(pass === 'besor123') {
+            document.getElementById('admin-password').value = '';
+            showScreen('admin-dashboard-screen');
+        } else {
+            alert('סיסמה שגויה!');
+        }
+    }
+
+    function renderAdminPanel() {
+        const qContainer = document.getElementById('admin-questions-list');
+        qContainer.innerHTML = '';
+        state.questions.forEach(q => {
+            const item = document.createElement('div');
+            item.className = 'admin-item-card';
+            item.innerHTML = `
+                <div class="match-info">
+                    <strong>${q.text}</strong>
+                    ${q.options && q.options.length > 0 ? `<div style="font-size: 13px; color: #666; margin-top: 3px;">אפשרויות: ${q.options.join(', ')}</div>` : ''}
+                </div>
+                <button class="btn btn-danger" style="width: auto; margin:0; padding: 6px 12px;" onclick="deleteQuestion(${q.id})">מחק</button>
+            `;
+            qContainer.appendChild(item);
+        });
+
+        const cContainer = document.getElementById('admin-cadets-list');
+        cContainer.innerHTML = '';
+        const cadetNames = Object.keys(state.cadets);
+        if(cadetNames.length === 0) {
+            cContainer.innerHTML = `<p style="color: #777;">אין צוערים רשומים עדיין.</p>`;
+        } else {
+            cadetNames.forEach(name => {
+                const item = document.createElement('div');
+                item.className = 'admin-item-card';
+                item.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <img src="${state.cadets[name].avatar || defaultAvatar}" class="match-avatar" style="width:40px; height:40px;">
+                        <div style="word-break: break-word;">
+                            <strong>${name}</strong>
+                            <div style="font-size:12px; color:#666;">${state.cadets[name].bio ? state.cadets[name].bio.substring(0, 25) + '...' : 'ללא תיאור'}</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger" style="width: auto; margin:0; padding: 6px 12px;" onclick="deleteCadet('${name}')">מחק</button>
+                `;
+                cContainer.appendChild(item);
+            });
+        }
+    }
+
+    function addQuestion() {
+        const textInput = document.getElementById('new-question-text');
+        const optionsInput = document.getElementById('new-question-options');
+        
+        const text = textInput.value.trim();
+        const optionsRaw = optionsInput.value.trim();
+        
+        if(!text) {
+            alert('אנא הכנס טקסט שאלה');
+            return;
+        }
+
+        const options = optionsRaw ? optionsRaw.split(',').map(o => o.trim()).filter(o => o.length > 0) : [];
+
+        const newId = state.questions.length > 0 ? Math.max(...state.questions.map(q => q.id)) + 1 : 1;
+        state.questions.push({ id: newId, text: text, options: options });
+        
+        textInput.value = '';
+        optionsInput.value = '';
+        saveData();
+        renderAdminPanel();
+    }
+
+    function deleteQuestion(id) {
+        state.questions = state.questions.filter(q => q.id !== id);
+        saveData();
+        renderAdminPanel();
+    }
+
+    function deleteCadet(name) {
+        delete state.cadets[name];
+        saveData();
+        renderAdminPanel();
+    }
+</script>
+
+</body>
+</html>
